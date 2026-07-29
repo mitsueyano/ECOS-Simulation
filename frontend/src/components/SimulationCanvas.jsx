@@ -141,7 +141,7 @@ export function SimulationCanvas() {
         ref={canvasRef}
         width={1300}
         height={800}
-        style={{
+        style={{  
           backgroundColor: "#315e3b",
           border: "3px solid #00518b",
           borderRadius: "8px",
