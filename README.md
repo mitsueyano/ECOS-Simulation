@@ -24,16 +24,21 @@ npm run dev
 ```
 
 ### 2. Iniciar o Frontend
-Em uma nova aba ou janela do terminal:
+Em um novo terminal:
 ```bash
 cd frontend
 npm run dev
 ```
-> **Obs:** Ao executar o comando `npm run dev` no frontend, a aplicação deve abrir automaticamente no seu navegador padrão. Caso isso não aconteça, abra o seu navegador e acesse a porta/endereço indicada no terminal (ou segure `Ctrl` / `Cmd` e clique no link do terminal).
 
-### 3. Acessar a Simulação
-Após rodar o comando do front-end, o terminal exibirá o endereço local de execução (geralmente `http://localhost:5173`).
+> **Nota:** O navegador abrirá a simulação automaticamente. Caso não abra, acesse o endereço exibido no terminal (por padrão `http://localhost:5173`).
 
+### 🛑 Encerrando a Aplicação
+
+Como o projeto utiliza servidores locais, fechar a aba do navegador não encerra os processos. Para finalizar completamente:
+
+1. Acesse os terminais onde o **Backend** e o **Frontend** estão sendo executados.
+2. Pressione **`Ctrl + C`** (Windows/Linux) ou **`Cmd + C`** (Mac) em cada um deles.
+3. Se solicitado (`Deseja fechar o arquivo em lote? (S/N)`), confirme digitando **`S`** e pressione `Enter`.
 
 ---
 
