@@ -4,42 +4,81 @@ O **E.C.O.S.** é uma simulação interativa 2D de seleção natural e autonomia
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+### Tecnologias Utilizadas
 
-- **Front-End:** React + Vite
-- **Renderização Gráfica:** HTML5 Canvas (2D)
-- **Back-End:** Node.js + Express
-- **Lógica e Física:** JavaScript ES6+
+| Camada               | Tecnologia            |
+|-----------------------|------------------------|
+| Front-End             | React + Vite           |
+| Renderização Gráfica  | HTML5 Canvas (2D)      |
+| Back-End              | Node.js + Express      |
+| Lógica e Física       | JavaScript ES6+        |
 
 ---
 
+### Pré-requisitos
+
+Antes de começar, você precisa ter o **[Node.js](https://nodejs.org/)** instalado na sua máquina. Para checar se já o possui, rode no terminal:
+
+```bash
+node -v
+```
+
+> ⚠️ **Usuários de Windows:** dê preferência ao **Command Prompt (CMD)** ou ao **Git Bash** para rodar os comandos abaixo. O PowerShell costuma bloquear scripts do `npm` por padrão.
+
+---
+
+<br>
+
 ## 👾 Como Executar o Projeto
 
-Abra o terminal na pasta raiz **ECOS** e siga as etapas:
+### 1. Instalar as dependências
 
-### 1. Iniciar o Backend
-```bash
+> Esse passo só precisa ser feito na primeira vez (ou sempre que os pacotes forem atualizados).
+
+Na pasta raiz do projeto, instale os pacotes do backend e do frontend:
+
+```cmd
+cd backend
+npm install
+
+cd ../frontend
+npm install
+```
+
+### 2. Iniciar a aplicação
+
+A aplicação precisa do backend e do frontend rodando **ao mesmo tempo**, então você vai precisar de **dois terminais abertos**.
+
+**Terminal 1 — Backend:**
+
+```cmd
 cd backend
 npm run dev
 ```
 
-### 2. Iniciar o Frontend
-Em um novo terminal:
-```bash
+**Terminal 2 — Frontend:**
+
+```cmd
 cd frontend
 npm run dev
 ```
 
-> **Nota:** O navegador abrirá a simulação automaticamente. Caso não abra, acesse o endereço exibido no terminal (por padrão `http://localhost:5173`).
+Depois de iniciar os dois, a aplicação abrirá automaticamente no navegador.
 
-### 🛑 Encerrando a Aplicação
+> **Nota:** Caso o navegador não abra sozinho, acesse manualmente o endereço exibido no terminal do frontend (por padrão `http://localhost:5173`).
 
-Como o projeto utiliza servidores locais, fechar a aba do navegador não encerra os processos. Para finalizar completamente:
+<br>
 
-1. Acesse os terminais onde o **Backend** e o **Frontend** estão sendo executados.
+## 🛑 Encerrando a Aplicação
+
+Como o projeto utiliza servidores locais, **fechar a aba do navegador não encerra os processos**. Para finalizar completamente:
+
+1. Acesse os dois terminais abertos (backend e frontend).
 2. Pressione **`Ctrl + C`** (Windows/Linux) ou **`Cmd + C`** (Mac) em cada um deles.
-3. Se solicitado (`Deseja fechar o arquivo em lote? (S/N)`), confirme digitando **`S`** e pressione `Enter`.
+3. Se o terminal perguntar `Deseja fechar o arquivo em lote? (S/N)`, digite **`S`** e pressione `Enter`.
 
----
+<br>
 
-📄 *Documentações detalhadas de arquitetura, parâmetros e manuais do sistema estão disponíveis na pasta de documentação do projeto.*
+## 📄 Documentação Adicional
+
+Documentações detalhadas de arquitetura, parâmetros de simulação e manuais do sistema estão disponíveis na pasta `docs/` do projeto.
