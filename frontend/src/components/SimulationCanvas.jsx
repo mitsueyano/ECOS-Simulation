@@ -12,10 +12,11 @@ export function SimulationCanvas() {
     const ctx = canvas.getContext("2d");
     let animationFrameId;
 
+    // ------- GERAÇÃO DE CRIATURAS -------
+
     // População inicial
     let creatures = [];
 
-    // ----- GERAÇÃO DE CRIATURAS
     // Criar Herbívoros
     for (let i = 0; i < CONFIG.population.initialHerbivores; i++) {
       creatures.push(
@@ -44,23 +45,25 @@ export function SimulationCanvas() {
     for (let i = 0; i < CONFIG.food.initialFood; i++) {
       foodList.push(new Food(canvas.width, canvas.height));
     }
+    let foodTimer = 0;
 
-    // ----- LOOP DO ECOSSISTEMA
+    // ------- LOOP DO ECOSSISTEMA DO CANVAS -------
     const render = () => {
-      // Limpa os desenhos do frame anterior
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa os desenhos do frame anterior
 
-      // Repõe comida gradualmente, respeitando o limite máximo (se ativado)
-      const foodCap = CONFIG.food.maxFood.enabled
-        ? CONFIG.food.maxFood.max
-        : Infinity;
+      // Timer de spawn da comida
+      foodTimer++;
+      if (foodTimer >= CONFIG.food.foodSpawnRate) {
+        const foodCap = CONFIG.food.maxFood.enabled
+          ? CONFIG.food.maxFood.max
+          : Infinity;
 
-      for (let i = 0; i < CONFIG.food.foodSpawnRate; i++) {
-        if (foodList.length >= foodCap) break;
-        foodList.push(new Food(canvas.width, canvas.height));
+        if (foodList.length < foodCap) {
+          foodList.push(new Food(canvas.width, canvas.height));
+        }
+        foodTimer = 0;
       }
-
-      // Desenha as Plantas
+      // Desenha a comida
       for (let food of foodList) {
         food.draw(ctx);
       }
@@ -68,11 +71,9 @@ export function SimulationCanvas() {
       // Contadores de criaturas vivas
       let hCount = 0;
       let cCount = 0;
+      let newCreatures = []; // Fila temporária para novos filhotes nascidos neste frame
 
-      // Fila temporária para novos filhotes nascidos neste frame
-      let newCreatures = [];
-
-      // ATUALIZAÇÃO, DESENHO E LIMPEZA DE MEMÓRIA (Iteração de trás para frente para evitar pular uma criatura removida com o splice)
+      // --- Atualização, desenho e limpeza de memória
       for (let i = creatures.length - 1; i >= 0; i--) {
         let creature = creatures[i];
 
@@ -85,21 +86,18 @@ export function SimulationCanvas() {
           canvas.height,
         );
 
-        // Se morreu, remove do array imediatamente para liberar a memória RAM
+        // Se morreu
         if (creature.isDead) {
           creatures.splice(i, 1);
           continue; // Pula o desenho e vai para a próxima
         }
-
-        // Se está viva, desenha no canvas e incrementa contadores
+        // Se está viva
         creature.draw(ctx);
-
         if (creature.type === "herbivore") hCount++;
         if (creature.type === "carnivore") cCount++;
       }
 
-      // Adiciona os filhotes nascidos, respeitando os limites de
-      // superpopulação individuais de cada espécie (se ativados).
+      // Adiciona os filhotes nascidos, respeitando os limites de superpopulação de cada espécie (se ativados)
       for (const child of newCreatures) {
         if (child.type === "herbivore") {
           const canAdd =
@@ -124,53 +122,39 @@ export function SimulationCanvas() {
 
       // Atualiza o placar no React
       setStats({ herbivores: hCount, carnivores: cCount });
-
       // Chama o próximo frame
       animationFrameId = requestAnimationFrame(render);
     };
-
     render();
 
     // Cancela a animação ao desmontar o componente
     return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
+  // ------- ------- ------- ------- Exibição
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        marginTop: "20px",
-      }}
-    >
-      <div
-        style={{
-          color: "#fff",
-          marginBottom: "10px",
-          fontSize: "18px",
-          display: "flex",
-          gap: "20px",
-        }}
-      >
-        <span>
-          <strong>Herbívoros:</strong> {stats.herbivores}
-        </span>
-        <span>
-          <strong>Carnívoros:</strong> {stats.carnivores}
-        </span>
+    <div id="container">
+      <div id="config">
+        <h3>Configurações</h3>
+        {/* Em andamento */}
       </div>
 
-      <canvas
-        ref={canvasRef}
-        width={1300}
-        height={800}
-        style={{
-          backgroundColor: "#315e3b",
-          border: "3px solid #00518b",
-          borderRadius: "8px",
-        }}
-      />
+      <canvas ref={canvasRef} width={1300} height={800} />
+
+      <div id="stats">
+        <h3>Painel</h3>
+        {/* Em andamento */}
+        <div id="creatures-alive">
+          <div>
+            <i class="fa-solid fa-atom herb"></i>
+            <strong>Herbívoros:</strong> {stats.herbivores}
+          </div>
+          <div>
+            <i class="fa-solid fa-atom carn"></i>
+            <strong>Carnívoros:</strong> {stats.carnivores}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

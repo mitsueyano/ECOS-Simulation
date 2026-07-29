@@ -18,9 +18,8 @@ function tanh(x) {
   return Math.tanh(x);
 }
 
-// --- ESTRUTURA E COMPORTAMENTO ---
+// ------- ESTRUTURA E COMPORTAMENTO -------
 
-// Para instanciar  um cérebro na simulação: const brain = new NeuralNetwork(a, b, c);
 export class NeuralNetwork {
   constructor(inputNodes, hiddenNodes, outputNodes) {
     this.inputNodes = inputNodes; // Quantidade de neurônios de entrada

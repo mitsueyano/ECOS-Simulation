@@ -1,15 +1,22 @@
 // Configuração central da simulação E.C.O.S.
 
+/*
+--- Configurações fixas --- 
 
+Energia dos herbívoros ao comer: 30
+Energia dos carnívoros ao comer: 70
+
+---------------------------
+*/
 export const simulationConfig = {
   // --- POPULAÇÃO INICIAL ---
   population: {
     initialHerbivores: 10,
-    initialCarnivores: 10,
+    initialCarnivores: 5,
 
     maxHerbivores: {
       enabled: false,
-      max: 150,
+      max: 50,
     },
     maxCarnivores: {
       enabled: false,
@@ -19,25 +26,23 @@ export const simulationConfig = {
 
   // --- COMIDA / RECURSOS ---
   food: {
-    initialFood: 150,
-
-    foodSpawnRate: 2,
-
+    initialFood: 100,
+    foodSpawnRate: 30,
     maxFood: {
-      enabled: false,
-      max: 300,
+      enabled: true,
+      max: 200,
     },
   },
 
   // --- ATRIBUTOS DE COMPORTAMENTO / BALANÇO BIOLÓGICO ---
   behavior: {
     herbivore: {
-      speed: 3.0,
-      sensorLength: 130, // Alcance de "visão" (em pixels)
+      speed: 2.5,
+      sensorLength: 140, // Alcance de "visão" (em pixels)
       reproduceThreshold: 130, // Energia mínima acumulada para gerar um filhote
     },
     carnivore: {
-      speed: 3.5,
+      speed: 3,
       sensorLength: 140,
       reproduceThreshold: 150,
     },
@@ -45,7 +50,7 @@ export const simulationConfig = {
 
   // --- ENERGIA ---
   energy: {
-    initialEnergy: 150, // Energia com que a criatura nasce
+    initialEnergy: 100, // Energia com que a criatura nasce
     maxEnergy: 200, // Energia máxima que a criatura pode acumular
   },
 };
