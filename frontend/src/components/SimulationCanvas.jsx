@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Creature } from "../simulation/Creature.js";
 import { Food } from "../simulation/Food.js";
+import { simulationConfig as CONFIG } from "../simulation/simulationConfig.js";
 
 export function SimulationCanvas() {
   const canvasRef = useRef(null);
@@ -16,7 +17,7 @@ export function SimulationCanvas() {
 
     // ----- GERAÇÃO DE CRIATURAS
     // Criar Herbívoros
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < CONFIG.population.initialHerbivores; i++) {
       creatures.push(
         new Creature(
           Math.random() * canvas.width,
@@ -27,7 +28,7 @@ export function SimulationCanvas() {
       );
     }
     // Criar Carnívoros
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < CONFIG.population.initialCarnivores; i++) {
       creatures.push(
         new Creature(
           Math.random() * canvas.width,
@@ -40,7 +41,7 @@ export function SimulationCanvas() {
 
     // Comidas para os herbívoros
     let foodList = [];
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < CONFIG.food.initialFood; i++) {
       foodList.push(new Food(canvas.width, canvas.height));
     }
 
@@ -49,10 +50,16 @@ export function SimulationCanvas() {
       // Limpa os desenhos do frame anterior
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Repõe plantas se a quantidade cair muito
-      while (foodList.length < 140) {
+      // Repõe comida gradualmente, respeitando o limite máximo (se ativado)
+      const foodCap = CONFIG.food.maxFood.enabled
+        ? CONFIG.food.maxFood.max
+        : Infinity;
+
+      for (let i = 0; i < CONFIG.food.foodSpawnRate; i++) {
+        if (foodList.length >= foodCap) break;
         foodList.push(new Food(canvas.width, canvas.height));
       }
+
       // Desenha as Plantas
       for (let food of foodList) {
         food.draw(ctx);
@@ -91,12 +98,29 @@ export function SimulationCanvas() {
         if (creature.type === "carnivore") cCount++;
       }
 
-      // Adiciona os filhotes nascidos (com limite de superpopulação de 150 para manter 60 FPS)
-      /*
-      if (creatures.length < 150 && newCreatures.length > 0) {
-        creatures.push(...newCreatures);
+      // Adiciona os filhotes nascidos, respeitando os limites de
+      // superpopulação individuais de cada espécie (se ativados).
+      for (const child of newCreatures) {
+        if (child.type === "herbivore") {
+          const canAdd =
+            !CONFIG.population.maxHerbivores.enabled ||
+            hCount < CONFIG.population.maxHerbivores.max;
+
+          if (canAdd) {
+            creatures.push(child);
+            hCount++;
+          }
+        } else if (child.type === "carnivore") {
+          const canAdd =
+            !CONFIG.population.maxCarnivores.enabled ||
+            cCount < CONFIG.population.maxCarnivores.max;
+
+          if (canAdd) {
+            creatures.push(child);
+            cCount++;
+          }
+        }
       }
-      */
 
       // Atualiza o placar no React
       setStats({ herbivores: hCount, carnivores: cCount });
@@ -141,7 +165,7 @@ export function SimulationCanvas() {
         ref={canvasRef}
         width={1300}
         height={800}
-        style={{  
+        style={{
           backgroundColor: "#315e3b",
           border: "3px solid #00518b",
           borderRadius: "8px",

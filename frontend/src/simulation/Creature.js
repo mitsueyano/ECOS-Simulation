@@ -1,4 +1,5 @@
 import { NeuralNetwork } from "./NeuralNetwork.js";
+import { simulationConfig as CONFIG } from "../simulation/simulationConfig.js";
 
 export class Creature {
   constructor(x, y, brain = null, type = "herbivore") {
@@ -13,21 +14,20 @@ export class Creature {
     this.type = type;
 
     //Estado de Sobrevivência e Reprodução
-    this.energy = 150;
-    this.maxEnergy = 200;
+    this.energy = CONFIG.energy.initialEnergy;
+    this.maxEnergy = CONFIG.energy.maxEnergy;
     this.isDead = false;
     this.generation = 1;
 
     //Atributos Específicos por Tipo (Balanço Biológico)
-    if (this.type === "carnivore") {
-      this.sensorLength = 140;
-      this.reproduceThresh = 150;
-      this.maxSpeed = 3.5;
-    } else {
-      this.sensorLength = 130;
-      this.reproduceThresh = 130;
-      this.maxSpeed = 3.0;
-    }
+    const traits =
+      this.type === "carnivore"
+        ? CONFIG.behavior.carnivore
+        : CONFIG.behavior.herbivore;
+
+    this.sensorLength = traits.sensorLength;
+    this.reproduceThresh = traits.reproduceThreshold;
+    this.maxSpeed = traits.speed;
 
     // Cérebro Artificial
     // 4 Entradas (Visão) -> 6 Neurônios Ocultos -> 2 Saídas (Giro e Aceleração)
