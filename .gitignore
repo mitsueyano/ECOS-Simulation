@@ -1,0 +1,32 @@
+# Node Modules
+node_modules/
+**/node_modules/
+
+# Builds e Distribuição
+dist
+dist-ssr
+**/dist/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Variáveis de ambiente sensíveis
+*.local
+.env
+
+# Arquivos do sistema e editores
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
