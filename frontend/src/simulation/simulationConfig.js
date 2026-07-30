@@ -1,16 +1,5 @@
 // Configuração central da simulação E.C.O.S.
 
-/*
---- Configurações fixas (não vêm do painel) ---
-
-Energia dos herbívoros ao comer uma planta: 30
-Energia dos carnívoros ao comer um herbívoro: 70
-Mutação da rede neural a cada filhote: 8%
-Tempo de vida de cada criatura: 30 a 90 segundos (aleatório)
-
----------------------------
-*/
-
 const DEFAULTS = {
   // --- POPULAÇÃO INICIAL ---
   population: {

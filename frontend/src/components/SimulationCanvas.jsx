@@ -45,17 +45,11 @@ export function SimulationCanvas({ onStatsUpdate }) {
     for (let i = 0; i < CONFIG.food.initialFood; i++) {
       foodList.push(new Food(canvas.width, canvas.height));
     }
-
-    // Acumulador de spawn de comida baseado em tempo real (segundos),
-    // não em número de frames — assim o ritmo de geração de comida
-    // não muda dependendo do FPS do navegador/aparelho do usuário.
     let foodSpawnAccumulator = 0;
     let lastFrameTime = performance.now();
 
     // ------- LOOP DO ECOSSISTEMA DO CANVAS -------
     const render = (now) => {
-      // Delta de tempo em segundos desde o frame anterior. O teto de
-      // 0.25s evita um "salto" de comida se a aba ficar minimizada.
       const delta = Math.min((now - lastFrameTime) / 1000, 0.25);
       lastFrameTime = now;
 
