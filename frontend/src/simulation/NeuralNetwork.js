@@ -84,7 +84,7 @@ export class NeuralNetwork {
   }
 
   // Mutação Genética para a próxima geração
-  mutate(rate = 0.1) {
+  mutate(rate = 0.08) {
     //taxa de mutação.
     const mutateValue = (val) => {
       if (Math.random() < rate) {

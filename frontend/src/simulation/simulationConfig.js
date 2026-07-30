@@ -1,58 +1,75 @@
 // Configuração central da simulação E.C.O.S.
 
 /*
---- Configurações fixas --- 
+--- Configurações fixas (não vêm do painel) ---
 
-Energia dos herbívoros ao comer: 30
-Energia dos carnívoros ao comer: 70
+Energia dos herbívoros ao comer uma planta: 30
+Energia dos carnívoros ao comer um herbívoro: 70
+Mutação da rede neural a cada filhote: 8%
+Tempo de vida de cada criatura: 30 a 90 segundos (aleatório)
 
 ---------------------------
 */
-export const simulationConfig = {
+
+const DEFAULTS = {
   // --- POPULAÇÃO INICIAL ---
   population: {
-    initialHerbivores: 10,
-    initialCarnivores: 5,
+    initialHerbivores: 30,
+    initialCarnivores: 8,
 
     maxHerbivores: {
-      enabled: false,
-      max: 50,
+      enabled: true,
+      max: 120,
     },
     maxCarnivores: {
-      enabled: false,
-      max: 50,
+      enabled: true,
+      max: 35,
     },
   },
 
   // --- COMIDA / RECURSOS ---
   food: {
-    initialFood: 100,
-    foodSpawnRate: 30,
+    initialFood: 190,
+
+    // Comidas novas geradas por segundo.
+    foodSpawnRate: 4,
+
     maxFood: {
       enabled: true,
-      max: 200,
+      max: 290,
     },
   },
 
   // --- ATRIBUTOS DE COMPORTAMENTO / BALANÇO BIOLÓGICO ---
   behavior: {
     herbivore: {
-      speed: 2.5,
-      sensorLength: 140, // Alcance de "visão" (em pixels)
-      reproduceThreshold: 130, // Energia mínima acumulada para gerar um filhote
+      speed: 2.6,
+      sensorLength: 150, // Alcance de "visão" (em pixels)
+      reproduceThreshold: 145, // Energia mínima acumulada para gerar um filhote
     },
     carnivore: {
       speed: 3,
-      sensorLength: 140,
-      reproduceThreshold: 150,
+      sensorLength: 150,
+      reproduceThreshold: 185,
     },
   },
 
   // --- ENERGIA ---
   energy: {
-    initialEnergy: 100, // Energia com que a criatura nasce
+    initialEnergy: 110, // Energia com que a criatura nasce
     maxEnergy: 200, // Energia máxima que a criatura pode acumular
   },
 };
+
+export const simulationConfig = structuredClone(DEFAULTS);
+
+// Restaura todos os campos para os valores padrão do projeto.
+export function resetSimulationConfig() {
+  const fresh = structuredClone(DEFAULTS);
+  simulationConfig.population = fresh.population;
+  simulationConfig.food = fresh.food;
+  simulationConfig.behavior = fresh.behavior;
+  simulationConfig.energy = fresh.energy;
+}
 
 export default simulationConfig;

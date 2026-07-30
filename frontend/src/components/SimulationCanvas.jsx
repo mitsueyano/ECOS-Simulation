@@ -1,16 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Creature } from "../simulation/Creature.js";
 import { Food } from "../simulation/Food.js";
 import { simulationConfig as CONFIG } from "../simulation/simulationConfig.js";
 
-export function SimulationCanvas() {
+export function SimulationCanvas({ onStatsUpdate }) {
   const canvasRef = useRef(null);
-  const [stats, setStats] = useState({ herbivores: 0, carnivores: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let animationFrameId;
+    const startTime = Date.now();
 
     // ------- GERAÇÃO DE CRIATURAS -------
 
@@ -45,24 +45,33 @@ export function SimulationCanvas() {
     for (let i = 0; i < CONFIG.food.initialFood; i++) {
       foodList.push(new Food(canvas.width, canvas.height));
     }
-    let foodTimer = 0;
+
+    // Acumulador de spawn de comida baseado em tempo real (segundos),
+    // não em número de frames — assim o ritmo de geração de comida
+    // não muda dependendo do FPS do navegador/aparelho do usuário.
+    let foodSpawnAccumulator = 0;
+    let lastFrameTime = performance.now();
 
     // ------- LOOP DO ECOSSISTEMA DO CANVAS -------
-    const render = () => {
+    const render = (now) => {
+      // Delta de tempo em segundos desde o frame anterior. O teto de
+      // 0.25s evita um "salto" de comida se a aba ficar minimizada.
+      const delta = Math.min((now - lastFrameTime) / 1000, 0.25);
+      lastFrameTime = now;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa os desenhos do frame anterior
 
-      // Timer de spawn da comida
-      foodTimer++;
-      if (foodTimer >= CONFIG.food.foodSpawnRate) {
-        const foodCap = CONFIG.food.maxFood.enabled
-          ? CONFIG.food.maxFood.max
-          : Infinity;
+      // Gera novas comidas de acordo com a taxa configurada (por segundo)
+      const foodCap = CONFIG.food.maxFood.enabled
+        ? CONFIG.food.maxFood.max
+        : Infinity;
 
-        if (foodList.length < foodCap) {
-          foodList.push(new Food(canvas.width, canvas.height));
-        }
-        foodTimer = 0;
+      foodSpawnAccumulator += CONFIG.food.foodSpawnRate * delta;
+      while (foodSpawnAccumulator >= 1 && foodList.length < foodCap) {
+        foodList.push(new Food(canvas.width, canvas.height));
+        foodSpawnAccumulator -= 1;
       }
+
       // Desenha a comida
       for (let food of foodList) {
         food.draw(ctx);
@@ -120,41 +129,37 @@ export function SimulationCanvas() {
         }
       }
 
-      // Atualiza o placar no React
-      setStats({ herbivores: hCount, carnivores: cCount });
+      // Repassa as estatísticas para o painel do lado direito
+      if (onStatsUpdate) {
+        let maxGeneration = 0;
+        for (const creature of creatures) {
+          if (creature.generation > maxGeneration) {
+            maxGeneration = creature.generation;
+          }
+        }
+
+        onStatsUpdate({
+          herbivores: hCount,
+          carnivores: cCount,
+          food: foodList.length,
+          maxGeneration,
+          elapsedSeconds: (Date.now() - startTime) / 1000,
+        });
+      }
+
       // Chama o próximo frame
       animationFrameId = requestAnimationFrame(render);
     };
-    render();
+    animationFrameId = requestAnimationFrame(render);
 
     // Cancela a animação ao desmontar o componente
     return () => cancelAnimationFrame(animationFrameId);
-  }, []);
+  }, [onStatsUpdate]);
 
   // ------- ------- ------- ------- Exibição
   return (
-    <div id="container">
-      <div id="config">
-        <h3>Configurações</h3>
-        {/* Em andamento */}
-      </div>
-
+    <div className="canvas-wrapper">
       <canvas ref={canvasRef} width={1300} height={800} />
-
-      <div id="stats">
-        <h3>Painel</h3>
-        {/* Em andamento */}
-        <div id="creatures-alive">
-          <div>
-            <i class="fa-solid fa-atom herb"></i>
-            <strong>Herbívoros:</strong> {stats.herbivores}
-          </div>
-          <div>
-            <i class="fa-solid fa-atom carn"></i>
-            <strong>Carnívoros:</strong> {stats.carnivores}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

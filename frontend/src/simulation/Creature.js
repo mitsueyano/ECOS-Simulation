@@ -2,7 +2,7 @@ import { NeuralNetwork } from "./NeuralNetwork.js";
 import { simulationConfig as CONFIG } from "../simulation/simulationConfig.js";
 
 export class Creature {
-  constructor(x, y, brain = null, type = "herbivore") {
+  constructor(x, y, brain = null, type = "herbivore", traits = null) {
     // Posição e Física
     this.x = x;
     this.y = y;
@@ -13,9 +13,27 @@ export class Creature {
     // Tipo de Dieta (herbivore/carnivore)
     this.type = type;
 
+    // Atributos Específicos por Tipo (Balanço Biológico)
+    const resolvedTraits =
+      traits ??
+      (() => {
+        const base =
+          this.type === "carnivore"
+            ? CONFIG.behavior.carnivore
+            : CONFIG.behavior.herbivore;
+
+        return {
+          speed: base.speed,
+          sensorLength: base.sensorLength,
+          reproduceThreshold: base.reproduceThreshold,
+          initialEnergy: CONFIG.energy.initialEnergy,
+          maxEnergy: CONFIG.energy.maxEnergy,
+        };
+      })();
+
     // Estado de Sobrevivência e Reprodução
-    this.energy = CONFIG.energy.initialEnergy;
-    this.maxEnergy = CONFIG.energy.maxEnergy;
+    this.energy = resolvedTraits.initialEnergy;
+    this.maxEnergy = resolvedTraits.maxEnergy;
     this.isDead = false;
     this.generation = 1;
 
@@ -23,15 +41,9 @@ export class Creature {
     this.age = 0;
     this.maxLifespan = 1800 + Math.random() * 3600;
 
-    // Atributos Específicos por Tipo (Balanço Biológico)
-    const traits =
-      this.type === "carnivore"
-        ? CONFIG.behavior.carnivore
-        : CONFIG.behavior.herbivore;
-
-    this.sensorLength = traits.sensorLength;
-    this.reproduceThresh = traits.reproduceThreshold;
-    this.maxSpeed = traits.speed;
+    this.sensorLength = resolvedTraits.sensorLength;
+    this.reproduceThresh = resolvedTraits.reproduceThreshold;
+    this.maxSpeed = resolvedTraits.speed;
 
     // Cérebro Artificial
     if (brain) {
@@ -122,7 +134,7 @@ export class Creature {
     this.energy -= childEnergy;
 
     let childBrain = this.brain.clone();
-    childBrain.mutate(0.08); // Mutação aletória de até 8%
+    childBrain.mutate(); // Mutação aletória de até 8%
 
     // Define uma posição aleatória próxima ao pai,
     let spawnOffsetX = (Math.random() - 0.5) * 30;
@@ -134,6 +146,13 @@ export class Creature {
       this.y + spawnOffsetY,
       childBrain,
       this.type,
+      {
+        speed: this.maxSpeed,
+        sensorLength: this.sensorLength,
+        reproduceThreshold: this.reproduceThresh,
+        initialEnergy: childEnergy,
+        maxEnergy: this.maxEnergy,
+      },
     );
 
     child.energy = childEnergy;
